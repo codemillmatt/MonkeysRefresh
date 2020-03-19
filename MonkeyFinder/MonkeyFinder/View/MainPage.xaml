@@ -5,11 +5,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
     xmlns:model="clr-namespace:MonkeyFinder.Model"
     xmlns:viewmodel="clr-namespace:MonkeyFinder.ViewModel"
     Title="{Binding Title}"
     x:DataType="viewmodel:MonkeysViewModel"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    BackgroundColor="{StaticResource Primary}"
+    ios:Page.UseSafeArea="true">
 
     <d:ContentPage.BindingContext>
         <viewmodel:MonkeysViewModel />
@@ -90,5 +93,14 @@
             IsEnabled="{Binding IsNotBusy}"
             Style="{StaticResource ButtonOutline}"
             Text="Search" />
+
+        <Button
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="8"
+            Command="{Binding SignInCommand}"
+            IsEnabled="{Binding IsNotSignedIn}"
+            Style="{StaticResource ButtonOutline}"
+            Text="Login" />
     </Grid>
 </ContentPage>

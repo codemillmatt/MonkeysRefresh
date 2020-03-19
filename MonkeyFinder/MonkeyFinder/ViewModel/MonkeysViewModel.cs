@@ -16,12 +16,31 @@ namespace MonkeyFinder.ViewModel
     {
         Random random = new Random();
         public Command GetMonkeysCommand { get; }
+        public Command SignInCommand { get; }
         public ObservableCollection<Monkey> Monkeys { get; }
+
+        bool isSignedIn;
+        public bool IsSignedIn
+        {
+            get => isSignedIn;
+            set
+            {
+                if (isSignedIn == value)
+                    return;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsNotSignedIn => !IsSignedIn;
+
         public MonkeysViewModel()
         {
             Title = "Monkey Finder";
             Monkeys = new ObservableCollection<Monkey>();
             GetMonkeysCommand = new Command(async () => await GetMonkeysAsync());
+            SignInCommand = new Command(async () => await SignInAsync());
+            IsSignedIn = false;
         }
 
         HttpClient httpClient;
@@ -85,6 +104,20 @@ namespace MonkeyFinder.ViewModel
 
             var next = random.Next(0, Monkeys.Count);
             return Monkeys[next].Image;
+        }
+
+        public async Task SignInAsync()
+        {
+            try
+            {
+                var userContext = await AuthenticationService.Instance.SignInAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+
+
         }
     }
 }

@@ -7,6 +7,10 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using ImageCircle.Forms.Plugin.Droid;
+using Plugin.CurrentActivity;
+using Microsoft.Identity.Client;
+using Xamarin.Forms;
+using Android.Content;
 
 namespace MonkeyFinder.Droid
 {
@@ -19,6 +23,9 @@ namespace MonkeyFinder.Droid
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(savedInstanceState);
+
+            CrossCurrentActivity.Current.Init(this, savedInstanceState);
+            DependencyService.Register<IParentWindowLocatorService, AndroidParentWindowLocatorService>();
 
             ImageCircleRenderer.Init();
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
@@ -34,6 +41,12 @@ namespace MonkeyFinder.Droid
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            base.OnActivityResult(requestCode, resultCode, data);
+            AuthenticationContinuationHelper.SetAuthenticationContinuationEventArgs(requestCode, resultCode, data);
         }
     }
 }

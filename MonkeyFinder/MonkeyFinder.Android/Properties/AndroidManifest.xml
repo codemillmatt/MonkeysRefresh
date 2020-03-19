@@ -1,6 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.companyname.MonkeyFinder" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="MonkeyFinder.Droid" android:installLocation="auto">
 	<uses-sdk android:minSdkVersion="19" android:targetSdkVersion="29" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<application android:label="MonkeyFinder.Android"></application>
+	<application android:label="MonkeyFinder.Android">       
+        <activity
+            android:name="com.microsoft.identity.client.BrowserTabActivity">
+             <intent-filter>
+                    <action android:name="android.intent.action.VIEW" />
+                    <category android:name="android.intent.category.DEFAULT" />
+                    <category android:name="android.intent.category.BROWSABLE" />
+                    <data android:scheme="msal87fb2adf-7358-4509-9636-1e5d19015c6e"
+                        android:host="auth" />
+             </intent-filter>
+         </activity>
+    </application>        
 </manifest>

@@ -4,6 +4,7 @@ using System.Linq;
 
 using Foundation;
 using ImageCircle.Forms.Plugin.iOS;
+using Microsoft.Identity.Client;
 using UIKit;
 
 namespace MonkeyFinder.iOS
@@ -29,6 +30,12 @@ namespace MonkeyFinder.iOS
             LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);
+        }
+
+        public override bool OpenUrl(UIApplication app, NSUrl url, NSDictionary options)
+        {
+            AuthenticationContinuationHelper.SetAuthenticationContinuationEventArgs(url);
+            return true;
         }
     }
 }

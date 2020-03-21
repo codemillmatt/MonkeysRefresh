@@ -14,6 +14,8 @@ namespace MonkeyFinder
     {
         private readonly IPublicClientApplication _pca;
 
+        public UserContext CurrentUser { get; private set; }
+
         private static readonly Lazy<AuthenticationService> lazy = new Lazy<AuthenticationService>
            (() => new AuthenticationService());
 
@@ -42,6 +44,10 @@ namespace MonkeyFinder
 
         public async Task<UserContext> SignInAsync()
         {
+            await SignOutAsync();
+
+            CurrentUser = null;
+
             UserContext newContext;
             try
             {
@@ -53,6 +59,9 @@ namespace MonkeyFinder
                 // acquire token interactive
                 newContext = await SignInInteractively();
             }
+
+            CurrentUser = newContext;
+
             return newContext;
         }
 
@@ -90,6 +99,9 @@ namespace MonkeyFinder
             }
             var signedOutContext = new UserContext();
             signedOutContext.IsLoggedOn = false;
+
+            CurrentUser = signedOutContext;
+
             return signedOutContext;
         }
 
@@ -140,7 +152,7 @@ namespace MonkeyFinder
                 newContext.EmailAddress = emails[0].ToString();
             }
             newContext.IsLoggedOn = true;
-
+            
             return newContext;
         }
 

@@ -46,6 +46,9 @@ namespace MonkeyFinder.ViewModel
         HttpClient httpClient;
         HttpClient Client => httpClient ?? (httpClient = new HttpClient());
 
+        DataService dataService;
+        DataService DataClient => dataService ?? (dataService = new DataService());
+
         async Task GetMonkeysAsync()
         {
             if (IsBusy)
@@ -54,7 +57,7 @@ namespace MonkeyFinder.ViewModel
             try
             {
                 IsBusy = true;
-                Monkey[] monkeys = null;
+                List<Monkey> monkeys = null;
 
                 var connection = DeviceInfo.Platform == DevicePlatform.watchOS ?
                     NetworkAccess.Internet : Connectivity.NetworkAccess;
@@ -62,13 +65,13 @@ namespace MonkeyFinder.ViewModel
                 // if internet is working
                 if (connection == NetworkAccess.Internet)
                 {
-                    var json = await Client.GetStringAsync("https://montemagno.com/monkeys.json");
+                    //var json = await Client.GetStringAsync("https://montemagno.com/monkeys.json");
 
-                    monkeys = Monkey.FromJson(json);
+                    monkeys = await DataClient.GetAllItems<Monkey>(DocumentType.Public);                    
                 }
                 else
                 {
-                    monkeys = new Monkey[]
+                    monkeys = new List<Monkey>
                     {
                         new Monkey { Name = "Sample Monkey", Location = "Sample Monkey" },
                         new Monkey { Name = "Sample Monkey", Location = "Sample Monkey" },

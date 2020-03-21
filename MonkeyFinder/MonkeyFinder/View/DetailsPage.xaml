@@ -48,8 +48,8 @@
                     Style="{StaticResource ButtonOutline}"
                     Margin="8"/>
 
-            <Button Text="Make Favorite"
-                    Command="{Binding MakeFavoriteCommand}"
+            <Button Text="{Binding FavoriteButtonText}"
+                    Command="{Binding FavoriteCommand}"
                     HorizontalOptions="Center"
                     WidthRequest="200"
                     Style="{StaticResource ButtonOutline}"

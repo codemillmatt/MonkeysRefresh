@@ -28,6 +28,8 @@ namespace MonkeyFinder.ViewModel
                 if (isSignedIn == value)
                     return;
 
+                isSignedIn = value;
+
                 OnPropertyChanged();
             }
         }
@@ -67,7 +69,18 @@ namespace MonkeyFinder.ViewModel
                 {
                     //var json = await Client.GetStringAsync("https://montemagno.com/monkeys.json");
 
-                    monkeys = await DataClient.GetAllItems<Monkey>(DocumentType.Public);                    
+                    monkeys = await DataClient.GetAllItems<Monkey>(DocumentType.Public);
+
+                    if (IsSignedIn)
+                    {
+                        var favorites = await DataClient.GetAllItems<FavoriteMonkey>(DocumentType.User);
+
+                        foreach (var item in monkeys)
+                        {
+                            if (favorites.Any(m => m.MonkeyName == item.Name))
+                                item.IsFavorite = true;
+                        }
+                    }
                 }
                 else
                 {
@@ -114,10 +127,14 @@ namespace MonkeyFinder.ViewModel
             try
             {
                 var userContext = await AuthenticationService.Instance.SignInAsync();
+
+                IsSignedIn = true;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
+
+                IsSignedIn = false;
             }
 
 

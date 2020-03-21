@@ -10,10 +10,12 @@ namespace MonkeyFinder.ViewModel
     public class MonkeyDetailsViewModel : BaseViewModel
     {
         public Command OpenMapCommand { get; }
+        public Command MakeFavoriteCommand { get; }
 
         public MonkeyDetailsViewModel()
         {
             OpenMapCommand = new Command(async () => await OpenMapAsync());
+            MakeFavoriteCommand = new Command(async () => await MakeFavoriteAsync());
         }
 
         public MonkeyDetailsViewModel(Monkey monkey)
@@ -46,6 +48,22 @@ namespace MonkeyFinder.ViewModel
             {
                 Debug.WriteLine($"Unable to launch maps: {ex.Message}");
                 await Application.Current.MainPage.DisplayAlert("Error, no Maps app!", ex.Message, "OK");
+            }
+        }
+
+        async Task MakeFavoriteAsync()
+        {
+            try
+            {
+                var data = new DataService();
+
+                var favorite = new FavoriteMonkey { MonkeyName = Monkey.Name };
+
+                await data.SaveItem(Monkey.Name, favorite);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
             }
         }
     }

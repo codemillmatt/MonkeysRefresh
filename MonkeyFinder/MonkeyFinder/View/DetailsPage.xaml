@@ -47,6 +47,13 @@
                     WidthRequest="200"
                     Style="{StaticResource ButtonOutline}"
                     Margin="8"/>
+
+            <Button Text="Make Favorite"
+                    Command="{Binding MakeFavoriteCommand}"
+                    HorizontalOptions="Center"
+                    WidthRequest="200"
+                    Style="{StaticResource ButtonOutline}"
+                    Margin="8"/>
             
             <BoxView HeightRequest="1" Color="#DDDDDD"/>
 

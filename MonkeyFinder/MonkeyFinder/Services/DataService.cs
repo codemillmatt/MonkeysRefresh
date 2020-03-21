@@ -98,9 +98,33 @@ namespace MonkeyFinder
             return allItems;
         }
 
-        public async Task SaveItem<T>(T itemToSave)
+        public async Task SaveItem<T>(string id, T itemToSave)
         {
-            await Task.CompletedTask;
+            if (AuthenticationService.Instance.CurrentUser == null ||
+                !AuthenticationService.Instance.CurrentUser.IsLoggedOn)
+            {
+                return;
+            }
+
+            try
+            {
+                DocumentClient docClient = await Initialize(DocumentType.User);
+
+                if (docClient == null)
+                    return;
+
+                var docToSave = new EmptyDocument<T>();
+                docToSave.Id = id;
+                docToSave.Document = itemToSave;
+                docToSave.PartitionKey = $"user-{AuthenticationService.Instance.CurrentUser.UserIdentifier}";
+
+                var collectionUri = UriFactory.CreateDocumentCollectionUri(databaseName, collectionName);
+                await docClient.CreateDocumentAsync(collectionUri, docToSave);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
         }
 
         public async Task<string> GetAccessToken(DocumentType documentType)

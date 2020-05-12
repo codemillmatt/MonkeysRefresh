@@ -19,6 +19,10 @@ namespace MonkeyFinder.Model
         public double Latitude { get; set; }
 
         public double Longitude { get; set; }
+
+        public string PartitionKey { get; set; }
+
+        public bool IsFavorite { get; set; }
     }
     
     public partial class Monkey

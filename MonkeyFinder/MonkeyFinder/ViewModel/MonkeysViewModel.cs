@@ -16,16 +16,40 @@ namespace MonkeyFinder.ViewModel
     {
         Random random = new Random();
         public Command GetMonkeysCommand { get; }
+        public Command SignInCommand { get; }
         public ObservableCollection<Monkey> Monkeys { get; }
+
+        bool isSignedIn;
+        public bool IsSignedIn
+        {
+            get => isSignedIn;
+            set
+            {
+                if (isSignedIn == value)
+                    return;
+
+                isSignedIn = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsNotSignedIn => !IsSignedIn;
+
         public MonkeysViewModel()
         {
             Title = "Monkey Finder";
             Monkeys = new ObservableCollection<Monkey>();
             GetMonkeysCommand = new Command(async () => await GetMonkeysAsync());
+            SignInCommand = new Command(async () => await SignInAsync());
+            IsSignedIn = false;
         }
 
         HttpClient httpClient;
         HttpClient Client => httpClient ?? (httpClient = new HttpClient());
+
+        DataService dataService;
+        DataService DataClient => dataService ?? (dataService = new DataService());
 
         async Task GetMonkeysAsync()
         {
@@ -35,7 +59,7 @@ namespace MonkeyFinder.ViewModel
             try
             {
                 IsBusy = true;
-                Monkey[] monkeys = null;
+                List<Monkey> monkeys = null;
 
                 var connection = DeviceInfo.Platform == DevicePlatform.watchOS ?
                     NetworkAccess.Internet : Connectivity.NetworkAccess;
@@ -43,13 +67,24 @@ namespace MonkeyFinder.ViewModel
                 // if internet is working
                 if (connection == NetworkAccess.Internet)
                 {
-                    var json = await Client.GetStringAsync("https://montemagno.com/monkeys.json");
+                    //var json = await Client.GetStringAsync("https://montemagno.com/monkeys.json");
 
-                    monkeys = Monkey.FromJson(json);
+                    monkeys = await DataClient.GetAllItems<Monkey>(DocumentType.Public);
+
+                    if (IsSignedIn)
+                    {
+                        var favorites = await DataClient.GetAllItems<FavoriteMonkey>(DocumentType.User);
+
+                        foreach (var item in monkeys)
+                        {
+                            if (favorites.Any(m => m.MonkeyName == item.Name))
+                                item.IsFavorite = true;
+                        }
+                    }
                 }
                 else
                 {
-                    monkeys = new Monkey[]
+                    monkeys = new List<Monkey>
                     {
                         new Monkey { Name = "Sample Monkey", Location = "Sample Monkey" },
                         new Monkey { Name = "Sample Monkey", Location = "Sample Monkey" },
@@ -85,6 +120,24 @@ namespace MonkeyFinder.ViewModel
 
             var next = random.Next(0, Monkeys.Count);
             return Monkeys[next].Image;
+        }
+
+        public async Task SignInAsync()
+        {
+            try
+            {
+                var userContext = await AuthenticationService.Instance.SignInAsync();
+
+                IsSignedIn = true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+
+                IsSignedIn = false;
+            }
+
+
         }
     }
 }

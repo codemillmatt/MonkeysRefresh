@@ -5,11 +5,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
     xmlns:model="clr-namespace:MonkeyFinder.Model"
     xmlns:viewmodel="clr-namespace:MonkeyFinder.ViewModel"
     Title="{Binding Title}"
     x:DataType="viewmodel:MonkeysViewModel"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    BackgroundColor="{StaticResource Primary}"
+    ios:Page.UseSafeArea="true">
 
     <d:ContentPage.BindingContext>
         <viewmodel:MonkeysViewModel />
@@ -31,17 +34,12 @@
                      IsRefreshing="{Binding IsBusy, Mode=OneWay}"
                      Grid.ColumnSpan="2"
                      Margin="5,5,5,0" >
-            <CollectionView 
+            <CollectionView
+                
                 SelectionMode="Single"
-                SelectionChanged="CollectionView_SelectionChanged">
-                <CollectionView.ItemsSource>
-                    <x:Array Type="{x:Type model:Monkey}">
-                        <model:Monkey Name="Baboon" Location="Africa and Asia"/>
-                        <model:Monkey Name="Capuchin Monkey" Location="Central and South America"/>
-                        <model:Monkey Name="Blue Monkey" Location="Central and East Africa"/>
-                    </x:Array>
-                </CollectionView.ItemsSource>
-                <!--<CollectionView.ItemsLayout>
+                SelectionChanged="CollectionView_SelectionChanged"
+                ItemsSource="{Binding Monkeys}">                
+                <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="5" />
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
@@ -68,11 +66,12 @@
                                     VerticalOptions="Center">
                                         <Label FontSize="Large" Text="{Binding Name}" />
                                         <Label FontSize="Medium" Text="{Binding Location}" />
+                                        <Label Text="Favorite" IsVisible="{Binding IsFavorite}" TextColor="{StaticResource PrimaryDark}"/>
                                     </StackLayout>
                                 </Grid>
                             </Frame>
                         </DataTemplate>
-                    </CollectionView.ItemTemplate>--> 
+                    </CollectionView.ItemTemplate> 
             </CollectionView>
         </RefreshView>
         
@@ -86,6 +85,16 @@
             Margin="8"
             Command="{Binding GetMonkeysCommand}"
             IsEnabled="{Binding IsNotBusy}"
+            Style="{StaticResource ButtonOutline}"
             Text="Search" />
+
+        <Button
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="8"
+            Command="{Binding SignInCommand}"
+            IsEnabled="{Binding IsNotSignedIn}"
+            Style="{StaticResource ButtonOutline}"
+            Text="Login" />
     </Grid>
 </ContentPage>
